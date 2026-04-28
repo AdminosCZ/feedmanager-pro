@@ -1,0 +1,71 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "adminos/feedmanager-pro",
+    "description": "Pro extension for adminos/feedmanager — adds B2B partner feeds with per-partner UUID tokens, rate limiting, download logs and a Filament admin UI for partner management.",
+    "type": "library",
+    "license": "proprietary",
+    "homepage": "https://adminos.cz",
+    "support": {
+        "issues": "https://github.com/AdminosCZ/adminos/issues",
+        "source": "https://github.com/AdminosCZ/feedmanager-pro"
+    },
+    "require": {
+        "php": "^8.3",
+        "adminos/core": "^0.1.0-alpha.2@dev",
+        "adminos/feedmanager": "^0.1.0-alpha.1@dev",
+        "filament/filament": "^4.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/support": "^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Adminos\\Modules\\FeedmanagerPro\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Adminos\\Modules\\FeedmanagerPro\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        },
+        "adminos": {
+            "id": "feedmanager-pro",
+            "name": "Feed Manager PRO",
+            "description": "B2B partner feeds extension for Feed Manager."
+        },
+        "laravel": {
+            "providers": [
+                "Adminos\\Modules\\FeedmanagerPro\\FeedmanagerProServiceProvider"
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../core",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../feedmanager",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
