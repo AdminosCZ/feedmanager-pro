@@ -40,10 +40,20 @@ final class Partner extends Model
 
     protected $guarded = ['id'];
 
+    protected $attributes = [
+        'feeds_active' => true,
+        'feed_full_limit' => 10,
+        'feed_stock_limit' => 50,
+        'default_low_stock_threshold' => 5,
+        'default_low_stock_availability' => 'Na dotaz',
+        'default_out_of_stock_availability' => 'Vyprodáno',
+    ];
+
     protected $casts = [
         'feeds_active' => 'boolean',
         'feed_full_limit' => 'integer',
         'feed_stock_limit' => 'integer',
+        'default_low_stock_threshold' => 'integer',
     ];
 
     protected static function booted(): void

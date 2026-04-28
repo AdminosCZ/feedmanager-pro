@@ -85,6 +85,28 @@ final class PartnerForm
                         ->default(50),
                 ]),
 
+            Section::make(__('feedmanager::feedmanager.partners.sections.thresholds'))
+                ->description(__('feedmanager::feedmanager.partners.thresholds_help'))
+                ->columns(3)
+                ->components([
+                    TextInput::make('default_low_stock_threshold')
+                        ->label(__('feedmanager::feedmanager.fields.default_low_stock_threshold'))
+                        ->helperText(__('feedmanager::feedmanager.helpers.default_low_stock_threshold'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(5),
+                    TextInput::make('default_low_stock_availability')
+                        ->label(__('feedmanager::feedmanager.fields.default_low_stock_availability'))
+                        ->helperText(__('feedmanager::feedmanager.helpers.default_low_stock_availability'))
+                        ->maxLength(64)
+                        ->default('Na dotaz'),
+                    TextInput::make('default_out_of_stock_availability')
+                        ->label(__('feedmanager::feedmanager.fields.default_out_of_stock_availability'))
+                        ->helperText(__('feedmanager::feedmanager.helpers.default_out_of_stock_availability'))
+                        ->maxLength(64)
+                        ->default('Vyprodáno'),
+                ]),
+
             Section::make(__('feedmanager::feedmanager.partners.sections.notes'))
                 ->collapsed()
                 ->components([

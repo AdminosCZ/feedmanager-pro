@@ -64,7 +64,7 @@ final class B2bFeedExporterTest extends TestCase
             'image_url' => 'https://example.com/a.jpg',
             'category_text' => 'Knihy',
             'complete_path' => 'Hlavní > Knihy',
-            'stock_quantity' => 5,
+            'stock_quantity' => 50,
             'availability' => 'skladem',
             'is_b2b_allowed' => true,
         ]);
@@ -85,7 +85,7 @@ final class B2bFeedExporterTest extends TestCase
         $this->assertStringContainsString('<image_url>https://example.com/a.jpg</image_url>', $xml);
         $this->assertStringContainsString('<category>Knihy</category>', $xml);
         $this->assertStringContainsString('<category_path>Hlavní &gt; Knihy</category_path>', $xml);
-        $this->assertStringContainsString('<stock_quantity>5</stock_quantity>', $xml);
+        $this->assertStringContainsString('<stock_quantity>50</stock_quantity>', $xml);
         $this->assertStringContainsString('<availability>skladem</availability>', $xml);
         $this->assertStringContainsString('type="full"', $xml);
         $this->assertStringContainsString('count="1"', $xml);

@@ -4,39 +4,34 @@ declare(strict_types=1);
 
 namespace Adminos\Modules\FeedmanagerPro\Services;
 
-use Adminos\Modules\FeedmanagerPro\Models\Partner;
 use Adminos\Modules\Feedmanager\Models\Product;
+use Adminos\Modules\FeedmanagerPro\Models\Partner;
 use Generator;
 use InvalidArgumentException;
 use XMLWriter;
 
 /**
- * Renders the B2B partner feed as XML.
+ * Renders the B2B partner feed as XML, with stock-visibility thresholds
+ * applied per partner / per product.
  *
- * Output schema (full):
+ * Threshold rules:
  *
- *   <products generated="2026-04-27T19:00:00+00:00" type="full" count="42">
- *     <product>
- *       <code>SKU-1</code>
- *       <name>...</name>
- *       <description>...</description>
- *       <price_vat>1234.56</price_vat>
- *       <price>1019.47</price>
- *       <old_price_vat>1499.99</old_price_vat>
- *       <currency>CZK</currency>
- *       <ean>...</ean>
- *       <product_number>...</product_number>
- *       <stock_quantity>5</stock_quantity>
- *       <availability>skladem</availability>
- *       <image_url>https://...</image_url>
- *       <category>...</category>
- *       <category_path>...</category_path>
- *     </product>
- *   </products>
+ *  - Partner has `default_low_stock_threshold` (e.g. 5 for standard, 2 for VIP),
+ *    `default_low_stock_availability` (label like "Na dotaz") and
+ *    `default_out_of_stock_availability` (e.g. "Vyprodáno").
+ *  - Product may carry `b2b_low_stock_threshold` (floor) and an optional
+ *    `b2b_low_stock_availability` override.
+ *  - Effective threshold for a (partner, product) pair = MAX of partner default
+ *    and product floor. Per-product is "be at least this careful, no matter
+ *    which partner is asking".
  *
- * Stock variant only emits code, price_vat, stock_quantity, availability —
- * suitable for partners polling for inventory updates without re-fetching
- * full descriptions.
+ * Behaviour at emit time:
+ *
+ *  - stock = 0:        availability = partner.default_out_of_stock; emit 0.
+ *  - stock <= effective threshold: availability = product.b2b_low_stock_avail
+ *    OR partner.default_low_stock_avail; stock element = 0 so partner can't
+ *    see exact remaining count and snipe it before others.
+ *  - stock > effective threshold: real availability + real stock.
  *
  * @api
  */
@@ -75,7 +70,7 @@ final class B2bFeedExporter
         $writer->writeAttribute('count', (string) $count);
 
         foreach ($this->productStream() as $product) {
-            $this->writeProduct($writer, $product, $feedType);
+            $this->writeProduct($writer, $product, $partner, $feedType);
             ++$emitted;
         }
 
@@ -85,6 +80,39 @@ final class B2bFeedExporter
         return [
             'xml' => $writer->outputMemory(true),
             'count' => $emitted,
+        ];
+    }
+
+    /**
+     * @return array{availability: ?string, stock_to_emit: int}
+     */
+    public function resolveStockVisibility(Product $product, Partner $partner): array
+    {
+        $stock = (int) $product->stock_quantity;
+
+        if ($stock <= 0) {
+            return [
+                'availability' => $partner->default_out_of_stock_availability,
+                'stock_to_emit' => 0,
+            ];
+        }
+
+        $effectiveThreshold = max(
+            (int) ($partner->default_low_stock_threshold ?? 0),
+            (int) ($product->b2b_low_stock_threshold ?? 0),
+        );
+
+        if ($effectiveThreshold > 0 && $stock <= $effectiveThreshold) {
+            return [
+                'availability' => $product->b2b_low_stock_availability
+                    ?: $partner->default_low_stock_availability,
+                'stock_to_emit' => 0,
+            ];
+        }
+
+        return [
+            'availability' => $product->availability,
+            'stock_to_emit' => $stock,
         ];
     }
 
@@ -110,16 +138,18 @@ final class B2bFeedExporter
             ->where('is_excluded', false);
     }
 
-    private function writeProduct(XMLWriter $writer, Product $product, string $feedType): void
+    private function writeProduct(XMLWriter $writer, Product $product, Partner $partner, string $feedType): void
     {
+        $visibility = $this->resolveStockVisibility($product, $partner);
+
         $writer->startElement('product');
 
         $writer->writeElement('code', $product->code);
         $writer->writeElement('price_vat', (string) $product->effectivePriceVat());
-        $writer->writeElement('stock_quantity', (string) $product->stock_quantity);
+        $writer->writeElement('stock_quantity', (string) $visibility['stock_to_emit']);
 
-        if ($product->availability !== null && $product->availability !== '') {
-            $writer->writeElement('availability', $product->availability);
+        if ($visibility['availability'] !== null && $visibility['availability'] !== '') {
+            $writer->writeElement('availability', $visibility['availability']);
         }
 
         if ($feedType === Partner::FEED_FULL) {
