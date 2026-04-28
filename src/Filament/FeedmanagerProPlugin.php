@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Adminos\Modules\FeedmanagerPro\Filament;
 
 use Adminos\Modules\FeedmanagerPro\Filament\Resources\PartnerResource;
+use Adminos\Modules\FeedmanagerPro\Filament\Resources\ShoptetExportConfigResource;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
@@ -25,6 +26,7 @@ final class FeedmanagerProPlugin implements Plugin
     {
         $panel->resources([
             PartnerResource::class,
+            ShoptetExportConfigResource::class,
         ]);
     }
 
