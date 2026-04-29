@@ -24,6 +24,57 @@ final class PartnerTest extends TestCase
         );
     }
 
+    public function test_basic_auth_credentials_are_generated_on_create(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $this->assertNotEmpty($partner->feed_username);
+        $this->assertNotEmpty($partner->feed_password);
+        $this->assertStringStartsWith('partner-', $partner->feed_username);
+    }
+
+    public function test_default_tier_is_standard(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $this->assertSame(Partner::TIER_STANDARD, $partner->tier);
+    }
+
+    public function test_explicit_tier_is_kept(): void
+    {
+        $partner = Partner::query()->create([
+            'company_name' => 'Acme',
+            'tier' => Partner::TIER_VIP,
+        ]);
+
+        $this->assertSame(Partner::TIER_VIP, $partner->tier);
+    }
+
+    public function test_regenerate_credentials_rotates_token_and_password(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+        $originalToken = $partner->access_token;
+        $originalUser = $partner->feed_username;
+        $originalPass = $partner->feed_password;
+
+        $partner->regenerateCredentials();
+
+        $this->assertNotSame($originalToken, $partner->access_token);
+        $this->assertNotSame($originalUser, $partner->feed_username);
+        $this->assertNotSame($originalPass, $partner->feed_password);
+    }
+
+    public function test_full_feed_url_is_absolute(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $url = $partner->fullFeedUrl();
+
+        $this->assertStringContainsString($partner->access_token, $url);
+        $this->assertStringEndsWith('/full', $url);
+        $this->assertMatchesRegularExpression('#^https?://#', $url);
+    }
+
     public function test_explicit_token_is_kept_on_create(): void
     {
         $token = '11111111-1111-1111-1111-111111111111';

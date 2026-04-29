@@ -12,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -25,9 +26,19 @@ final class PartnersTable
                     ->label(__('feedmanager::feedmanager.fields.company_name'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('tier')
+                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
+                        default => __('feedmanager::feedmanager.partners.tier.standard'),
+                    })
+                    ->color(fn (?string $state): string => $state === Partner::TIER_VIP ? 'warning' : 'gray')
+                    ->sortable(),
                 TextColumn::make('ico')
                     ->label(__('feedmanager::feedmanager.fields.ico'))
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('contact_name')
                     ->label(__('feedmanager::feedmanager.fields.contact_name'))
                     ->toggleable(),
@@ -40,13 +51,6 @@ final class PartnersTable
                 TextColumn::make('feed_stock_limit')
                     ->label(__('feedmanager::feedmanager.fields.feed_stock_limit'))
                     ->alignEnd(),
-                TextColumn::make('access_token')
-                    ->label(__('feedmanager::feedmanager.fields.access_token'))
-                    ->copyable()
-                    ->fontFamily('mono')
-                    ->limit(12)
-                    ->tooltip(fn (Partner $record): string => $record->access_token)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label(__('feedmanager::feedmanager.fields.updated_at'))
                     ->dateTime()
@@ -54,19 +58,25 @@ final class PartnersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('tier')
+                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->options([
+                        Partner::TIER_STANDARD => __('feedmanager::feedmanager.partners.tier.standard'),
+                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
+                    ]),
                 TernaryFilter::make('feeds_active')
                     ->label(__('feedmanager::feedmanager.fields.feeds_active')),
             ])
             ->recordActions([
                 ViewAction::make(),
-                Action::make('regenerate_token')
-                    ->label(__('feedmanager::feedmanager.actions.regenerate_token'))
+                Action::make('regenerate_credentials')
+                    ->label(__('feedmanager::feedmanager.actions.regenerate_credentials'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_token_confirm_heading'))
-                    ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_token_confirm'))
-                    ->action(fn (Partner $record) => $record->regenerateToken()),
+                    ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm_heading'))
+                    ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm'))
+                    ->action(fn (Partner $record) => $record->regenerateCredentials()),
                 EditAction::make(),
             ])
             ->toolbarActions([

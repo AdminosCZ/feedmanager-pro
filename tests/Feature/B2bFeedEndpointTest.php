@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Adminos\Modules\FeedmanagerPro\Tests\Feature;
 
+use Adminos\Modules\Feedmanager\Models\Product;
 use Adminos\Modules\FeedmanagerPro\Models\DownloadLog;
 use Adminos\Modules\FeedmanagerPro\Models\Partner;
-use Adminos\Modules\Feedmanager\Models\Product;
 use Adminos\Modules\FeedmanagerPro\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 
 final class B2bFeedEndpointTest extends TestCase
 {
@@ -56,7 +57,38 @@ final class B2bFeedEndpointTest extends TestCase
 
         // Route constraint `where('type', 'full|stock')` rejects bogus types
         // before middleware runs.
-        $this->getJson("/feed/{$partner->access_token}/bogus")->assertStatus(404);
+        $this->asPartner($partner)
+            ->getJson("/feed/{$partner->access_token}/bogus")->assertStatus(404);
+    }
+
+    public function test_returns_401_when_basic_auth_missing(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $response = $this->getJson("/feed/{$partner->access_token}/full");
+
+        $response->assertStatus(401);
+        $response->assertHeader('WWW-Authenticate');
+    }
+
+    public function test_returns_401_when_basic_auth_wrong_password(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $response = $this->withBasicAuthHeader($partner->feed_username, 'wrong-password')
+            ->getJson("/feed/{$partner->access_token}/full");
+
+        $response->assertStatus(401);
+    }
+
+    public function test_returns_401_when_basic_auth_wrong_username(): void
+    {
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+
+        $response = $this->withBasicAuthHeader('wrong-user', $partner->feed_password)
+            ->getJson("/feed/{$partner->access_token}/full");
+
+        $response->assertStatus(401);
     }
 
     public function test_returns_xml_for_valid_full_request(): void
@@ -69,7 +101,8 @@ final class B2bFeedEndpointTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $response = $this->get("/feed/{$partner->access_token}/full");
+        $response = $this->asPartner($partner)
+            ->get("/feed/{$partner->access_token}/full");
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
@@ -82,7 +115,8 @@ final class B2bFeedEndpointTest extends TestCase
     {
         $partner = Partner::query()->create(['company_name' => 'Acme']);
 
-        $this->get("/feed/{$partner->access_token}/stock")->assertStatus(200);
+        $this->asPartner($partner)
+            ->get("/feed/{$partner->access_token}/stock")->assertStatus(200);
 
         $log = DownloadLog::query()->latest('id')->first();
         $this->assertNotNull($log);
@@ -99,11 +133,26 @@ final class B2bFeedEndpointTest extends TestCase
             'feed_full_limit' => 1,
         ]);
 
-        $first = $this->get("/feed/{$partner->access_token}/full");
+        $first = $this->asPartner($partner)->get("/feed/{$partner->access_token}/full");
         $first->assertStatus(200);
 
-        $second = $this->get("/feed/{$partner->access_token}/full");
+        $second = $this->asPartner($partner)->get("/feed/{$partner->access_token}/full");
         $second->assertStatus(429);
         $second->assertHeader('Retry-After', '3600');
+    }
+
+    private function asPartner(Partner $partner): self
+    {
+        return $this->withBasicAuthHeader(
+            (string) $partner->feed_username,
+            (string) $partner->feed_password,
+        );
+    }
+
+    private function withBasicAuthHeader(string $user, string $pass): self
+    {
+        $this->withHeader('Authorization', 'Basic '.base64_encode($user.':'.$pass));
+
+        return $this;
     }
 }

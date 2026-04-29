@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Adminos\Modules\FeedmanagerPro\Filament\Resources\Partners\Schemas;
 
 use Adminos\Modules\FeedmanagerPro\Models\Partner;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -17,6 +16,14 @@ final class PartnerInfolist
     {
         return $schema->components([
             Grid::make(4)->components([
+                TextEntry::make('tier')
+                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
+                        default => __('feedmanager::feedmanager.partners.tier.standard'),
+                    })
+                    ->color(fn (?string $state): string => $state === Partner::TIER_VIP ? 'warning' : 'gray'),
                 TextEntry::make('feeds_active')
                     ->label(__('feedmanager::feedmanager.fields.feeds_active'))
                     ->badge()
@@ -38,27 +45,33 @@ final class PartnerInfolist
                         $record->recentSuccessfulDownloadCount(Partner::FEED_STOCK),
                         $record->feed_stock_limit,
                     )),
-                TextEntry::make('updated_at')
-                    ->label(__('feedmanager::feedmanager.fields.updated_at'))
-                    ->dateTime(),
             ]),
 
             Section::make(__('feedmanager::feedmanager.partners.sections.feed_access'))
+                ->description(__('feedmanager::feedmanager.partners.feed_access_help'))
                 ->components([
-                    TextEntry::make('access_token')
-                        ->label(__('feedmanager::feedmanager.fields.access_token'))
-                        ->copyable()
-                        ->fontFamily('mono'),
                     TextEntry::make('full_feed_url')
                         ->label(__('feedmanager::feedmanager.partners.full_feed_url'))
-                        ->state(fn (Partner $record): string => $record->fullFeedPath())
+                        ->state(fn (Partner $record): string => $record->fullFeedUrl())
                         ->copyable()
                         ->fontFamily('mono'),
                     TextEntry::make('stock_feed_url')
                         ->label(__('feedmanager::feedmanager.partners.stock_feed_url'))
-                        ->state(fn (Partner $record): string => $record->stockFeedPath())
+                        ->state(fn (Partner $record): string => $record->stockFeedUrl())
                         ->copyable()
                         ->fontFamily('mono'),
+                    Grid::make(2)->components([
+                        TextEntry::make('feed_username')
+                            ->label(__('feedmanager::feedmanager.fields.feed_username'))
+                            ->copyable()
+                            ->fontFamily('mono')
+                            ->placeholder(__('feedmanager::feedmanager.partners.no_credentials')),
+                        TextEntry::make('feed_password')
+                            ->label(__('feedmanager::feedmanager.fields.feed_password'))
+                            ->copyable()
+                            ->fontFamily('mono')
+                            ->placeholder(__('feedmanager::feedmanager.partners.no_credentials')),
+                    ]),
                 ]),
 
             Section::make(__('feedmanager::feedmanager.partners.sections.identity'))

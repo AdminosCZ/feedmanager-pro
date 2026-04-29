@@ -44,17 +44,17 @@ final class ViewPartner extends ViewRecord
                         ->success()
                         ->send();
                 }),
-            Action::make('regenerate_token')
-                ->label(__('feedmanager::feedmanager.actions.regenerate_token'))
+            Action::make('regenerate_credentials')
+                ->label(__('feedmanager::feedmanager.actions.regenerate_credentials'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
                 ->requiresConfirmation()
-                ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_token_confirm_heading'))
-                ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_token_confirm'))
+                ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm_heading'))
+                ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm'))
                 ->action(function (Partner $record): void {
-                    $record->regenerateToken();
+                    $record->regenerateCredentials();
                     Notification::make()
-                        ->title(__('feedmanager::feedmanager.notifications.token_regenerated'))
+                        ->title(__('feedmanager::feedmanager.notifications.credentials_regenerated'))
                         ->success()
                         ->send();
                 }),
