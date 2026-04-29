@@ -133,8 +133,13 @@ final class B2bFeedExporter
 
     private function exportableQuery(): \Illuminate\Database\Eloquent\Builder
     {
+        // Two-state B2B exclusion:
+        //  - is_b2b_allowed=false  → permanently out (set on Vlastní katalog).
+        //  - is_b2b_paused=true    → temporarily out (set on Partners tab);
+        //                            product stays visible to admin.
         return Product::query()
             ->where('is_b2b_allowed', true)
+            ->where('is_b2b_paused', false)
             ->where('is_excluded', false);
     }
 

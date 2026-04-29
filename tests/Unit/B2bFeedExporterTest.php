@@ -48,6 +48,31 @@ final class B2bFeedExporterTest extends TestCase
         $this->assertStringNotContainsString('GLOBALLY_EXCLUDED', $result['xml']);
     }
 
+    public function test_paused_products_are_dropped_from_feed_but_master_stays_on(): void
+    {
+        Product::query()->create([
+            'code' => 'ACTIVE',
+            'name' => 'Active',
+            'price_vat' => '99.0000',
+            'is_b2b_allowed' => true,
+            'is_b2b_paused' => false,
+        ]);
+        Product::query()->create([
+            'code' => 'PAUSED',
+            'name' => 'Paused',
+            'price_vat' => '99.0000',
+            'is_b2b_allowed' => true,
+            'is_b2b_paused' => true,
+        ]);
+
+        $partner = Partner::query()->create(['company_name' => 'Acme']);
+        $result = $this->exporter()->export($partner, Partner::FEED_FULL);
+
+        $this->assertSame(1, $result['count']);
+        $this->assertStringContainsString('<code>ACTIVE</code>', $result['xml']);
+        $this->assertStringNotContainsString('PAUSED', $result['xml']);
+    }
+
     public function test_full_feed_emits_full_field_set(): void
     {
         Product::query()->create([
