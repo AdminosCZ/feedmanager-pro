@@ -49,6 +49,20 @@ final class Partner extends Model
     /** @var array<int, string> */
     public const TIERS = [self::TIER_STANDARD, self::TIER_VIP];
 
+    /**
+     * Conventional low-stock threshold per tier — used when previewing
+     * partner-visible availability in admin (e.g. the products list "Pro
+     * partnery" tab) without picking one specific partner. Per-partner
+     * `default_low_stock_threshold` overrides this; per-product
+     * `b2b_low_stock_threshold` raises but never lowers the effective floor.
+     *
+     * @var array<string, int>
+     */
+    public const TIER_DEFAULT_THRESHOLDS = [
+        self::TIER_STANDARD => 5,
+        self::TIER_VIP => 2,
+    ];
+
     protected $table = 'feedmanager_partners';
 
     protected $guarded = ['id'];
