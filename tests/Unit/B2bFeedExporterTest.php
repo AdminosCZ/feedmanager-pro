@@ -186,6 +186,8 @@ final class B2bFeedExporterTest extends TestCase
 
     private function exporter(): B2bFeedExporter
     {
-        return new B2bFeedExporter();
+        return new B2bFeedExporter(
+            new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver(),
+        );
     }
 }

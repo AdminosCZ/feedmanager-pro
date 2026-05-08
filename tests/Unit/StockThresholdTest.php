@@ -29,7 +29,7 @@ final class StockThresholdTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(20, $result['stock_to_emit']);
         $this->assertSame('skladem', $result['availability']);
@@ -51,7 +51,7 @@ final class StockThresholdTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(0, $result['stock_to_emit']);
         $this->assertSame('Na dotaz', $result['availability']);
@@ -73,7 +73,7 @@ final class StockThresholdTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(0, $result['stock_to_emit']);
         $this->assertSame('Vyprodáno', $result['availability']);
@@ -94,7 +94,7 @@ final class StockThresholdTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(1, $result['stock_to_emit']);
         $this->assertSame('skladem', $result['availability']);
@@ -119,7 +119,7 @@ final class StockThresholdTest extends TestCase
             'b2b_low_stock_threshold' => 4,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(0, $result['stock_to_emit']);
         $this->assertSame('Na dotaz', $result['availability']);
@@ -144,7 +144,7 @@ final class StockThresholdTest extends TestCase
             'b2b_low_stock_threshold' => 1,
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame(0, $result['stock_to_emit']);
         $this->assertSame('Na dotaz', $result['availability']);
@@ -167,7 +167,7 @@ final class StockThresholdTest extends TestCase
             'b2b_low_stock_availability' => 'Pouze na objednávku',
         ]);
 
-        $result = (new B2bFeedExporter())->resolveStockVisibility($product, $partner);
+        $result = (new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver()))->resolveStockVisibility($product, $partner);
 
         $this->assertSame('Pouze na objednávku', $result['availability']);
     }
@@ -195,7 +195,7 @@ final class StockThresholdTest extends TestCase
             'is_b2b_allowed' => true,
         ]);
 
-        $exporter = new B2bFeedExporter();
+        $exporter = new B2bFeedExporter(new \Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver());
         $standardView = $exporter->resolveStockVisibility($product, $standard);
         $vipView = $exporter->resolveStockVisibility($product, $vip);
 

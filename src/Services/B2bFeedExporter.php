@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Adminos\Modules\FeedmanagerPro\Services;
 
 use Adminos\Modules\Feedmanager\Models\Product;
+use Adminos\Modules\Feedmanager\Services\B2bInclusion\B2bInclusionResolver;
 use Adminos\Modules\FeedmanagerPro\Models\Partner;
 use Generator;
 use InvalidArgumentException;
@@ -38,6 +39,7 @@ use XMLWriter;
 final class B2bFeedExporter
 {
     public function __construct(
+        private readonly B2bInclusionResolver $inclusionResolver,
         private readonly int $chunkSize = 500,
     ) {
     }
@@ -133,14 +135,11 @@ final class B2bFeedExporter
 
     private function exportableQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        // Two-state B2B exclusion:
-        //  - is_b2b_allowed=false  → permanently out (set on Vlastní katalog).
-        //  - is_b2b_paused=true    → temporarily out (set on Partners tab);
-        //                            product stays visible to admin.
-        return Product::query()
-            ->where('is_b2b_allowed', true)
-            ->where('is_b2b_paused', false)
-            ->where('is_excluded', false);
+        // Single source of truth — všechna pravidla (global exclude,
+        // master flag, paused flag, force-allow/exclude override,
+        // category exclusion tree) řeší {@see B2bInclusionResolver}.
+        // Žádný hardcoded chain `where()->where()->where()` v exporteru.
+        return $this->inclusionResolver->constrainToIncluded(Product::query());
     }
 
     private function writeProduct(XMLWriter $writer, Product $product, Partner $partner, string $feedType): void
