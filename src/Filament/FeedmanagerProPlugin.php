@@ -28,6 +28,11 @@ final class FeedmanagerProPlugin implements Plugin
             PartnerResource::class,
             ShoptetExportConfigResource::class,
         ]);
+
+        // Group „B2B" sama o sobě registruje klient v AdminPanelProvider —
+        // klient ví, které moduly má, a má v rukou pořadí groups. Plugin
+        // jen poskytuje resources, které se do té groupy automaticky napárují
+        // přes `getNavigationGroup()` na resourcech.
     }
 
     public function boot(Panel $panel): void

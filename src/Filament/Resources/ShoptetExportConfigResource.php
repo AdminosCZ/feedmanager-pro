@@ -31,22 +31,22 @@ final class ShoptetExportConfigResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('feedmanager::feedmanager.shoptet_exports.label');
+        return __('feedmanager-pro::feedmanager-pro.shoptet_exports.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('feedmanager::feedmanager.shoptet_exports.plural_label');
+        return __('feedmanager-pro::feedmanager-pro.shoptet_exports.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('feedmanager::feedmanager.shoptet_exports.navigation_label');
+        return __('feedmanager-pro::feedmanager-pro.shoptet_exports.navigation_label');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __('feedmanager::feedmanager.navigation.group');
+        return __('feedmanager::feedmanager.navigation.my_eshop');
     }
 
     public static function form(Schema $schema): Schema

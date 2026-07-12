@@ -21,15 +21,15 @@ final class ShoptetExportConfigsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('feedmanager::feedmanager.fields.shoptet_export_name'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.shoptet_export_name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('feed_type')
-                    ->label(__('feedmanager::feedmanager.fields.shoptet_feed_type'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.shoptet_feed_type'))
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        ShoptetExportConfig::FEED_FULL => __('feedmanager::feedmanager.shoptet_feed_types.full'),
-                        ShoptetExportConfig::FEED_STOCK => __('feedmanager::feedmanager.shoptet_feed_types.stock'),
+                        ShoptetExportConfig::FEED_FULL => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.full'),
+                        ShoptetExportConfig::FEED_STOCK => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.stock'),
                         default => $state,
                     })
                     ->color(fn (string $state): string => match ($state) {
@@ -63,10 +63,10 @@ final class ShoptetExportConfigsTable
                 TernaryFilter::make('is_active')
                     ->label(__('feedmanager::feedmanager.fields.is_active')),
                 SelectFilter::make('feed_type')
-                    ->label(__('feedmanager::feedmanager.fields.shoptet_feed_type'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.shoptet_feed_type'))
                     ->options([
-                        ShoptetExportConfig::FEED_FULL => __('feedmanager::feedmanager.shoptet_feed_types.full'),
-                        ShoptetExportConfig::FEED_STOCK => __('feedmanager::feedmanager.shoptet_feed_types.stock'),
+                        ShoptetExportConfig::FEED_FULL => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.full'),
+                        ShoptetExportConfig::FEED_STOCK => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.stock'),
                     ]),
             ])
             ->recordActions([

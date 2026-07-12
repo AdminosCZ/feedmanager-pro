@@ -19,15 +19,15 @@ final class EditShoptetExportConfig extends EditRecord
     {
         return [
             Action::make('regenerate_token')
-                ->label(__('feedmanager::feedmanager.actions.regenerate_token'))
+                ->label(__('feedmanager-pro::feedmanager-pro.actions.regenerate_token'))
                 ->color('warning')
                 ->icon('heroicon-o-arrow-path')
                 ->requiresConfirmation()
-                ->modalDescription(__('feedmanager::feedmanager.shoptet_exports.regenerate_warning'))
+                ->modalDescription(__('feedmanager-pro::feedmanager-pro.shoptet_exports.regenerate_warning'))
                 ->action(function (ShoptetExportConfig $record): void {
                     $record->regenerateToken();
                     Notification::make()
-                        ->title(__('feedmanager::feedmanager.notifications.token_regenerated'))
+                        ->title(__('feedmanager-pro::feedmanager-pro.notifications.token_regenerated'))
                         ->success()
                         ->send();
                     $this->fillForm();

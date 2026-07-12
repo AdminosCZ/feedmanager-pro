@@ -17,12 +17,12 @@ final class EditPartner extends EditRecord
     {
         return [
             Action::make('regenerate_token')
-                ->label(__('feedmanager::feedmanager.actions.regenerate_token'))
+                ->label(__('feedmanager-pro::feedmanager-pro.actions.regenerate_token'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
                 ->requiresConfirmation()
-                ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_token_confirm_heading'))
-                ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_token_confirm'))
+                ->modalHeading(__('feedmanager-pro::feedmanager-pro.actions.regenerate_token_confirm_heading'))
+                ->modalDescription(__('feedmanager-pro::feedmanager-pro.actions.regenerate_token_confirm'))
                 ->action(function (): void {
                     $this->record->regenerateToken();
                     $this->refreshFormData(['access_token']);

@@ -33,22 +33,22 @@ final class PartnerResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('feedmanager::feedmanager.partners.label');
+        return __('feedmanager-pro::feedmanager-pro.partners.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('feedmanager::feedmanager.partners.plural_label');
+        return __('feedmanager-pro::feedmanager-pro.partners.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('feedmanager::feedmanager.partners.navigation_label');
+        return __('feedmanager-pro::feedmanager-pro.partners.navigation_label');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __('feedmanager::feedmanager.navigation.group');
+        return __('feedmanager-pro::feedmanager-pro.navigation.b2b');
     }
 
     public static function form(Schema $schema): Schema

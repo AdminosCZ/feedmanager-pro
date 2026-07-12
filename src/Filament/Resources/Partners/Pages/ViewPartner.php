@@ -28,8 +28,8 @@ final class ViewPartner extends ViewRecord
         return [
             Action::make('toggle_feeds')
                 ->label(fn (Partner $record): string => $record->feeds_active
-                    ? __('feedmanager::feedmanager.actions.disable_feeds')
-                    : __('feedmanager::feedmanager.actions.enable_feeds'))
+                    ? __('feedmanager-pro::feedmanager-pro.actions.disable_feeds')
+                    : __('feedmanager-pro::feedmanager-pro.actions.enable_feeds'))
                 ->icon(fn (Partner $record): string => $record->feeds_active
                     ? 'heroicon-o-pause-circle'
                     : 'heroicon-o-play-circle')
@@ -39,22 +39,22 @@ final class ViewPartner extends ViewRecord
                     $record->update(['feeds_active' => ! $record->feeds_active]);
                     Notification::make()
                         ->title($record->feeds_active
-                            ? __('feedmanager::feedmanager.notifications.feeds_enabled')
-                            : __('feedmanager::feedmanager.notifications.feeds_disabled'))
+                            ? __('feedmanager-pro::feedmanager-pro.notifications.feeds_enabled')
+                            : __('feedmanager-pro::feedmanager-pro.notifications.feeds_disabled'))
                         ->success()
                         ->send();
                 }),
             Action::make('regenerate_credentials')
-                ->label(__('feedmanager::feedmanager.actions.regenerate_credentials'))
+                ->label(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
                 ->requiresConfirmation()
-                ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm_heading'))
-                ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm'))
+                ->modalHeading(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials_confirm_heading'))
+                ->modalDescription(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials_confirm'))
                 ->action(function (Partner $record): void {
                     $record->regenerateCredentials();
                     Notification::make()
-                        ->title(__('feedmanager::feedmanager.notifications.credentials_regenerated'))
+                        ->title(__('feedmanager-pro::feedmanager-pro.notifications.credentials_regenerated'))
                         ->success()
                         ->send();
                 }),

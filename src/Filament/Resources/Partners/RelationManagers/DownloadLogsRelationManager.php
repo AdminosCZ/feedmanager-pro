@@ -22,7 +22,7 @@ final class DownloadLogsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->heading(__('feedmanager::feedmanager.partners.recent_downloads'))
+            ->heading(__('feedmanager-pro::feedmanager-pro.partners.recent_downloads'))
             ->defaultSort('created_at', 'desc')
             ->paginated([10, 25, 50])
             ->columns([

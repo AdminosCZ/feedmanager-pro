@@ -6,6 +6,7 @@ namespace Adminos\Modules\FeedmanagerPro\Tests\Unit;
 
 use Adminos\Modules\FeedmanagerPro\Models\Partner;
 use Adminos\Modules\Feedmanager\Models\Product;
+use Adminos\Modules\Feedmanager\Models\Supplier;
 use Adminos\Modules\FeedmanagerPro\Services\B2bFeedExporter;
 use Adminos\Modules\FeedmanagerPro\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,9 +16,32 @@ final class B2bFeedExporterTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * B2B feed čerpá VÝHRADNĚ z `supplier.is_own=true` produktů (pipeline
+     * pravidlo, viz poznámka 29). Testy ho proto všechny napojují na
+     * tento vlastní eshop. Externí supplier scenarios mají vlastní test.
+     */
+    private function ownEshopSupplier(): Supplier
+    {
+        return Supplier::query()->firstOrCreate(
+            ['slug' => 'own-eshop'],
+            ['name' => 'Vlastní eshop', 'is_own' => true],
+        );
+    }
+
+    private function externalSupplier(string $name = 'ACI'): Supplier
+    {
+        return Supplier::query()->create([
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
+            'is_own' => false,
+        ]);
+    }
+
     public function test_full_feed_includes_b2b_allowed_non_excluded_products(): void
     {
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'INCLUDED',
             'name' => 'Included',
             'price_vat' => '99.0000',
@@ -25,6 +49,7 @@ final class B2bFeedExporterTest extends TestCase
             'is_excluded' => false,
         ]);
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'EXCLUDED',
             'name' => 'Hidden',
             'price_vat' => '50.0000',
@@ -32,6 +57,7 @@ final class B2bFeedExporterTest extends TestCase
             'is_excluded' => false,
         ]);
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'GLOBALLY_EXCLUDED',
             'name' => 'Hidden too',
             'price_vat' => '70.0000',
@@ -51,6 +77,7 @@ final class B2bFeedExporterTest extends TestCase
     public function test_paused_products_are_dropped_from_feed_but_master_stays_on(): void
     {
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'ACTIVE',
             'name' => 'Active',
             'price_vat' => '99.0000',
@@ -58,6 +85,7 @@ final class B2bFeedExporterTest extends TestCase
             'is_b2b_paused' => false,
         ]);
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'PAUSED',
             'name' => 'Paused',
             'price_vat' => '99.0000',
@@ -76,6 +104,7 @@ final class B2bFeedExporterTest extends TestCase
     public function test_full_feed_emits_full_field_set(): void
     {
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'SKU-1',
             'name' => 'Demo',
             'description' => '<p>HTML body</p>',
@@ -119,6 +148,7 @@ final class B2bFeedExporterTest extends TestCase
     public function test_stock_feed_emits_minimal_fields(): void
     {
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'SKU-2',
             'name' => 'Should not appear',
             'description' => 'Either',
@@ -147,6 +177,7 @@ final class B2bFeedExporterTest extends TestCase
     public function test_full_feed_uses_override_fields_when_present(): void
     {
         Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
             'code' => 'SKU-3',
             'name' => 'Original name',
             'description' => 'Original desc',
@@ -165,6 +196,56 @@ final class B2bFeedExporterTest extends TestCase
         $this->assertStringContainsString('<price_vat>79.0000</price_vat>', $xml);
         $this->assertStringNotContainsString('Original name', $xml);
         $this->assertStringNotContainsString('Original desc', $xml);
+    }
+
+    public function test_products_from_external_supplier_never_reach_b2b_feed(): void
+    {
+        // Pipeline pravidlo: B2B feed čerpá VÝHRADNĚ z is_own=true. Externí
+        // dodavatel (ACI), i kdyby měl explicit b2b_inclusion_override =
+        // force_allowed, nesmí v exportu projít. Cesta dodavatel → B2B je
+        // přes Shoptet (= eshop produkt vyrobí, exportuje zpět do ADMINOSu
+        // s is_own=true supplier, teprve pak může do B2B feedu).
+        Product::query()->create([
+            'supplier_id' => $this->ownEshopSupplier()->id,
+            'code' => 'OWN-OK',
+            'name' => 'Vlastní eshop produkt',
+            'price_vat' => '99.0000',
+            'is_b2b_allowed' => true,
+        ]);
+        Product::query()->create([
+            'supplier_id' => $this->externalSupplier('ACI')->id,
+            'code' => 'ACI-PRODUCT',
+            'name' => 'Produkt od ACI dodavatele',
+            'price_vat' => '50.0000',
+            'is_b2b_allowed' => true,
+            // Ani force_allowed override pravidlo neobchází.
+            'b2b_inclusion_override' => Product::B2B_OVERRIDE_FORCE_ALLOWED,
+        ]);
+
+        $partner = Partner::query()->create(['company_name' => 'Partner']);
+        $result = $this->exporter()->export($partner, Partner::FEED_FULL);
+
+        $this->assertSame(1, $result['count']);
+        $this->assertStringContainsString('<code>OWN-OK</code>', $result['xml']);
+        $this->assertStringNotContainsString('ACI-PRODUCT', $result['xml']);
+    }
+
+    public function test_product_without_supplier_never_reaches_b2b_feed(): void
+    {
+        // Edge case: produkt bez supplier_id (legacy / manuálně vytvořený
+        // v adminu) se nedostane do B2B — nelze prokázat, že pochází
+        // z vlastního eshopu.
+        Product::query()->create([
+            'code' => 'NO-SUPPLIER',
+            'name' => 'Sirota',
+            'price_vat' => '99.0000',
+            'is_b2b_allowed' => true,
+        ]);
+
+        $partner = Partner::query()->create(['company_name' => 'Partner']);
+        $result = $this->exporter()->export($partner, Partner::FEED_FULL);
+
+        $this->assertSame(0, $result['count']);
     }
 
     public function test_invalid_feed_type_throws(): void

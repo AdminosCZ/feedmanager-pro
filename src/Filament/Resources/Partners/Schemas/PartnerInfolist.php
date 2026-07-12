@@ -17,29 +17,29 @@ final class PartnerInfolist
         return $schema->components([
             Grid::make(4)->components([
                 TextEntry::make('tier')
-                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.tier'))
                     ->badge()
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
-                        default => __('feedmanager::feedmanager.partners.tier.standard'),
+                        Partner::TIER_VIP => __('feedmanager-pro::feedmanager-pro.partners.tier.vip'),
+                        default => __('feedmanager-pro::feedmanager-pro.partners.tier.standard'),
                     })
                     ->color(fn (?string $state): string => $state === Partner::TIER_VIP ? 'warning' : 'gray'),
                 TextEntry::make('feeds_active')
-                    ->label(__('feedmanager::feedmanager.fields.feeds_active'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feeds_active'))
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state
-                        ? __('feedmanager::feedmanager.partners.status.feeds_on')
-                        : __('feedmanager::feedmanager.partners.status.feeds_off'))
+                        ? __('feedmanager-pro::feedmanager-pro.partners.status.feeds_on')
+                        : __('feedmanager-pro::feedmanager-pro.partners.status.feeds_off'))
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextEntry::make('feed_full_limit')
-                    ->label(__('feedmanager::feedmanager.fields.feed_full_limit'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_full_limit'))
                     ->state(fn (Partner $record): string => sprintf(
                         '%d / %d',
                         $record->recentSuccessfulDownloadCount(Partner::FEED_FULL),
                         $record->feed_full_limit,
                     )),
                 TextEntry::make('feed_stock_limit')
-                    ->label(__('feedmanager::feedmanager.fields.feed_stock_limit'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_stock_limit'))
                     ->state(fn (Partner $record): string => sprintf(
                         '%d / %d',
                         $record->recentSuccessfulDownloadCount(Partner::FEED_STOCK),
@@ -47,34 +47,34 @@ final class PartnerInfolist
                     )),
             ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.feed_access'))
-                ->description(__('feedmanager::feedmanager.partners.feed_access_help'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.feed_access'))
+                ->description(__('feedmanager-pro::feedmanager-pro.partners.feed_access_help'))
                 ->components([
                     TextEntry::make('full_feed_url')
-                        ->label(__('feedmanager::feedmanager.partners.full_feed_url'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.partners.full_feed_url'))
                         ->state(fn (Partner $record): string => $record->fullFeedUrl())
                         ->copyable()
                         ->fontFamily('mono'),
                     TextEntry::make('stock_feed_url')
-                        ->label(__('feedmanager::feedmanager.partners.stock_feed_url'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.partners.stock_feed_url'))
                         ->state(fn (Partner $record): string => $record->stockFeedUrl())
                         ->copyable()
                         ->fontFamily('mono'),
                     Grid::make(2)->components([
                         TextEntry::make('feed_username')
-                            ->label(__('feedmanager::feedmanager.fields.feed_username'))
+                            ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_username'))
                             ->copyable()
                             ->fontFamily('mono')
-                            ->placeholder(__('feedmanager::feedmanager.partners.no_credentials')),
+                            ->placeholder(__('feedmanager-pro::feedmanager-pro.partners.no_credentials')),
                         TextEntry::make('feed_password')
-                            ->label(__('feedmanager::feedmanager.fields.feed_password'))
+                            ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_password'))
                             ->copyable()
                             ->fontFamily('mono')
-                            ->placeholder(__('feedmanager::feedmanager.partners.no_credentials')),
+                            ->placeholder(__('feedmanager-pro::feedmanager-pro.partners.no_credentials')),
                     ]),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.identity'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.identity'))
                 ->columns(2)
                 ->components([
                     TextEntry::make('company_name')
@@ -91,13 +91,13 @@ final class PartnerInfolist
                         ->label(__('feedmanager::feedmanager.fields.phone')),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.notes'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.notes'))
                 ->collapsed(fn (Partner $record): bool => empty($record->notes))
                 ->components([
                     TextEntry::make('notes')
                         ->label(__('feedmanager::feedmanager.fields.notes'))
                         ->columnSpanFull()
-                        ->placeholder(__('feedmanager::feedmanager.partners.no_notes')),
+                        ->placeholder(__('feedmanager-pro::feedmanager-pro.partners.no_notes')),
                 ]),
         ]);
     }

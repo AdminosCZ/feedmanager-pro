@@ -18,11 +18,11 @@ final class ShoptetExportConfigForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('feedmanager::feedmanager.shoptet_exports.sections.identity'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.shoptet_exports.sections.identity'))
                 ->columns(2)
                 ->components([
                     TextInput::make('name')
-                        ->label(__('feedmanager::feedmanager.fields.shoptet_export_name'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.shoptet_export_name'))
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
@@ -36,13 +36,13 @@ final class ShoptetExportConfigForm
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(64)
-                        ->helperText(__('feedmanager::feedmanager.helpers.shoptet_export_slug')),
+                        ->helperText(__('feedmanager-pro::feedmanager-pro.helpers.shoptet_export_slug')),
                     Select::make('feed_type')
-                        ->label(__('feedmanager::feedmanager.fields.shoptet_feed_type'))
-                        ->helperText(__('feedmanager::feedmanager.helpers.shoptet_feed_type'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.shoptet_feed_type'))
+                        ->helperText(__('feedmanager-pro::feedmanager-pro.helpers.shoptet_feed_type'))
                         ->options([
-                            ShoptetExportConfig::FEED_FULL => __('feedmanager::feedmanager.shoptet_feed_types.full'),
-                            ShoptetExportConfig::FEED_STOCK => __('feedmanager::feedmanager.shoptet_feed_types.stock'),
+                            ShoptetExportConfig::FEED_FULL => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.full'),
+                            ShoptetExportConfig::FEED_STOCK => __('feedmanager-pro::feedmanager-pro.shoptet_feed_types.stock'),
                         ])
                         ->default(ShoptetExportConfig::FEED_FULL)
                         ->native(false)
@@ -52,18 +52,18 @@ final class ShoptetExportConfigForm
                         ->default(true),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.shoptet_exports.sections.access'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.shoptet_exports.sections.access'))
                 ->components([
                     TextInput::make('access_token')
-                        ->label(__('feedmanager::feedmanager.fields.access_token'))
-                        ->helperText(__('feedmanager::feedmanager.helpers.shoptet_access_token'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.access_token'))
+                        ->helperText(__('feedmanager-pro::feedmanager-pro.helpers.shoptet_access_token'))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(fn (): string => ShoptetExportConfig::generateToken())
                         ->columnSpanFull(),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.shoptet_exports.sections.notes'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.shoptet_exports.sections.notes'))
                 ->collapsed()
                 ->components([
                     Textarea::make('notes')

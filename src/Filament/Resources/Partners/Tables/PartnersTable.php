@@ -27,11 +27,11 @@ final class PartnersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('tier')
-                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.tier'))
                     ->badge()
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
-                        default => __('feedmanager::feedmanager.partners.tier.standard'),
+                        Partner::TIER_VIP => __('feedmanager-pro::feedmanager-pro.partners.tier.vip'),
+                        default => __('feedmanager-pro::feedmanager-pro.partners.tier.standard'),
                     })
                     ->color(fn (?string $state): string => $state === Partner::TIER_VIP ? 'warning' : 'gray')
                     ->sortable(),
@@ -43,13 +43,13 @@ final class PartnersTable
                     ->label(__('feedmanager::feedmanager.fields.contact_name'))
                     ->toggleable(),
                 IconColumn::make('feeds_active')
-                    ->label(__('feedmanager::feedmanager.fields.feeds_active'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feeds_active'))
                     ->boolean(),
                 TextColumn::make('feed_full_limit')
-                    ->label(__('feedmanager::feedmanager.fields.feed_full_limit'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_full_limit'))
                     ->alignEnd(),
                 TextColumn::make('feed_stock_limit')
-                    ->label(__('feedmanager::feedmanager.fields.feed_stock_limit'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_stock_limit'))
                     ->alignEnd(),
                 TextColumn::make('updated_at')
                     ->label(__('feedmanager::feedmanager.fields.updated_at'))
@@ -59,23 +59,23 @@ final class PartnersTable
             ])
             ->filters([
                 SelectFilter::make('tier')
-                    ->label(__('feedmanager::feedmanager.fields.tier'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.tier'))
                     ->options([
-                        Partner::TIER_STANDARD => __('feedmanager::feedmanager.partners.tier.standard'),
-                        Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
+                        Partner::TIER_STANDARD => __('feedmanager-pro::feedmanager-pro.partners.tier.standard'),
+                        Partner::TIER_VIP => __('feedmanager-pro::feedmanager-pro.partners.tier.vip'),
                     ]),
                 TernaryFilter::make('feeds_active')
-                    ->label(__('feedmanager::feedmanager.fields.feeds_active')),
+                    ->label(__('feedmanager-pro::feedmanager-pro.fields.feeds_active')),
             ])
             ->recordActions([
                 ViewAction::make(),
                 Action::make('regenerate_credentials')
-                    ->label(__('feedmanager::feedmanager.actions.regenerate_credentials'))
+                    ->label(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->modalHeading(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm_heading'))
-                    ->modalDescription(__('feedmanager::feedmanager.actions.regenerate_credentials_confirm'))
+                    ->modalHeading(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials_confirm_heading'))
+                    ->modalDescription(__('feedmanager-pro::feedmanager-pro.actions.regenerate_credentials_confirm'))
                     ->action(fn (Partner $record) => $record->regenerateCredentials()),
                 EditAction::make(),
             ])

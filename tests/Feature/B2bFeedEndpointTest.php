@@ -94,7 +94,15 @@ final class B2bFeedEndpointTest extends TestCase
     public function test_returns_xml_for_valid_full_request(): void
     {
         $partner = Partner::query()->create(['company_name' => 'Acme']);
+        // B2B feed čerpá výhradně z vlastního eshopu (is_own=true) — viz
+        // poznámka 29 (B2B pipeline). Test musí mít is_own supplier.
+        $supplier = \Adminos\Modules\Feedmanager\Models\Supplier::query()->create([
+            'name' => 'Vlastní eshop',
+            'slug' => 'own-eshop',
+            'is_own' => true,
+        ]);
         Product::query()->create([
+            'supplier_id' => $supplier->id,
             'code' => 'SKU-A',
             'name' => 'Demo',
             'price_vat' => '99.9999',

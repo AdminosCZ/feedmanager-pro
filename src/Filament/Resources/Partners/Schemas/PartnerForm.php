@@ -19,7 +19,7 @@ final class PartnerForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('feedmanager::feedmanager.partners.sections.identity'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.identity'))
                 ->columns(2)
                 ->components([
                     TextInput::make('company_name')
@@ -28,15 +28,15 @@ final class PartnerForm
                         ->maxLength(255)
                         ->columnSpanFull(),
                     Select::make('tier')
-                        ->label(__('feedmanager::feedmanager.fields.tier'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.tier'))
                         ->options([
-                            Partner::TIER_STANDARD => __('feedmanager::feedmanager.partners.tier.standard'),
-                            Partner::TIER_VIP => __('feedmanager::feedmanager.partners.tier.vip'),
+                            Partner::TIER_STANDARD => __('feedmanager-pro::feedmanager-pro.partners.tier.standard'),
+                            Partner::TIER_VIP => __('feedmanager-pro::feedmanager-pro.partners.tier.vip'),
                         ])
                         ->default(Partner::TIER_STANDARD)
                         ->required()
                         ->native(false)
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.tier'))
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.tier'))
                         ->columnSpanFull(),
                     TextInput::make('ico')
                         ->label(__('feedmanager::feedmanager.fields.ico'))
@@ -46,7 +46,7 @@ final class PartnerForm
                         ->maxLength(16),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.contact'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.contact'))
                 ->columns(2)
                 ->components([
                     TextInput::make('contact_name')
@@ -71,72 +71,72 @@ final class PartnerForm
                         ->maxLength(16),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.feed_access'))
-                ->description(__('feedmanager::feedmanager.partners.feed_access_help'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.feed_access'))
+                ->description(__('feedmanager-pro::feedmanager-pro.partners.feed_access_help'))
                 ->columns(3)
                 ->components([
                     TextInput::make('access_token')
-                        ->label(__('feedmanager::feedmanager.fields.access_token'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.access_token'))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(fn (): string => Partner::generateToken())
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.access_token'))
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.access_token'))
                         ->columnSpanFull(),
                     TextInput::make('feed_username')
-                        ->label(__('feedmanager::feedmanager.fields.feed_username'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_username'))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(fn (): string => Partner::generateUsername())
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.feed_username'))
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.feed_username'))
                         ->columnSpan(1),
                     TextInput::make('feed_password')
-                        ->label(__('feedmanager::feedmanager.fields.feed_password'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_password'))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(fn (): string => Partner::generatePassword())
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.feed_password'))
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.feed_password'))
                         ->columnSpan(2),
                     Toggle::make('feeds_active')
-                        ->label(__('feedmanager::feedmanager.fields.feeds_active'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.feeds_active'))
                         ->default(true)
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.feeds_active')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.feeds_active')),
                     TextInput::make('feed_full_limit')
-                        ->label(__('feedmanager::feedmanager.fields.feed_full_limit'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_full_limit'))
                         ->numeric()
                         ->minValue(0)
                         ->default(10)
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.feed_full_limit')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.feed_full_limit')),
                     TextInput::make('feed_stock_limit')
-                        ->label(__('feedmanager::feedmanager.fields.feed_stock_limit'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.feed_stock_limit'))
                         ->numeric()
                         ->minValue(0)
                         ->default(50)
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.feed_stock_limit')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.feed_stock_limit')),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.thresholds'))
-                ->description(__('feedmanager::feedmanager.partners.thresholds_help'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.thresholds'))
+                ->description(__('feedmanager-pro::feedmanager-pro.partners.thresholds_help'))
                 ->columns(3)
                 ->components([
                     TextInput::make('default_low_stock_threshold')
-                        ->label(__('feedmanager::feedmanager.fields.default_low_stock_threshold'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.default_low_stock_threshold'))
                         ->numeric()
                         ->minValue(0)
                         ->default(5)
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.default_low_stock_threshold')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.default_low_stock_threshold')),
                     TextInput::make('default_low_stock_availability')
-                        ->label(__('feedmanager::feedmanager.fields.default_low_stock_availability'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.default_low_stock_availability'))
                         ->maxLength(64)
                         ->default('Na dotaz')
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.default_low_stock_availability')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.default_low_stock_availability')),
                     TextInput::make('default_out_of_stock_availability')
-                        ->label(__('feedmanager::feedmanager.fields.default_out_of_stock_availability'))
+                        ->label(__('feedmanager-pro::feedmanager-pro.fields.default_out_of_stock_availability'))
                         ->maxLength(64)
                         ->default('Vyprodáno')
-                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager::feedmanager.helpers.default_out_of_stock_availability')),
+                        ->hintIcon(self::HINT_ICON, tooltip: __('feedmanager-pro::feedmanager-pro.helpers.default_out_of_stock_availability')),
                 ]),
 
-            Section::make(__('feedmanager::feedmanager.partners.sections.notes'))
+            Section::make(__('feedmanager-pro::feedmanager-pro.partners.sections.notes'))
                 ->collapsed()
                 ->components([
                     Textarea::make('notes')

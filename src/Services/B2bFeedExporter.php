@@ -139,7 +139,16 @@ final class B2bFeedExporter
         // master flag, paused flag, force-allow/exclude override,
         // category exclusion tree) řeší {@see B2bInclusionResolver}.
         // Žádný hardcoded chain `where()->where()->where()` v exporteru.
-        return $this->inclusionResolver->constrainToIncluded(Product::query());
+        //
+        // PIPELINE PRAVIDLO: B2B feed čerpá VÝHRADNĚ z `supplier.is_own=true`
+        // produktů (= vlastní eshop). Produkty od externích dodavatelů (ACI,
+        // velkoobchod) se do B2B feedu nedostanou — i kdyby měly
+        // `b2b_inclusion_override = force_allowed`. Pokud chce admin prodat
+        // dodavatelský produkt B2B, musí ho nejdřív propustit přes vlastní
+        // eshop (Shoptet), který ho re-exportuje zpět do ADMINOSu pod
+        // `is_own=true` supplier. Detail: `docs/poznamky/29-b2b-pipeline.md`.
+        return $this->inclusionResolver->constrainToIncluded(Product::query())
+            ->whereHas('supplier', fn ($q) => $q->where('is_own', true));
     }
 
     private function writeProduct(XMLWriter $writer, Product $product, Partner $partner, string $feedType): void
